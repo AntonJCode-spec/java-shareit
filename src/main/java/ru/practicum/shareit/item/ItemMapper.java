@@ -1,8 +1,12 @@
 package ru.practicum.shareit.item;
 
+import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.NewItemRequest;
+import ru.practicum.shareit.item.dto.UpdateItemRequest;
 import ru.practicum.shareit.item.model.Item;
 
+@UtilityClass
 public class ItemMapper {
 
     public static ItemDto mapToItemDto(Item item) {
@@ -21,23 +25,23 @@ public class ItemMapper {
         return itemDto;
     }
 
-    public static Item mapToItem(ItemDto itemDto) {
+    public static Item mapToItem(NewItemRequest newItemRequest) {
         Item item = new Item();
-        item.setName(itemDto.getName());
-        item.setDescription(itemDto.getDescription());
-        item.setAvailable(itemDto.getAvailable());
+        item.setName(newItemRequest.getName());
+        item.setDescription(newItemRequest.getDescription());
+        item.setAvailable(newItemRequest.getAvailable());
         return item;
     }
 
-    public static void updateField(Item updatedItem, ItemDto itemDto) {
-        if (itemDto.getName() != null && !itemDto.getName().isBlank()) {
-            updatedItem.setName(itemDto.getName());
+    public static void updateField(Item updatedItem, UpdateItemRequest updateItemRequest) {
+        if (updateItemRequest.getName() != null && !updateItemRequest.getName().isBlank()) {
+            updatedItem.setName(updateItemRequest.getName());
         }
-        if (itemDto.getDescription() != null && !itemDto.getDescription().isBlank()) {
-            updatedItem.setDescription(itemDto.getDescription());
+        if (updateItemRequest.getDescription() != null && !updateItemRequest.getDescription().isBlank()) {
+            updatedItem.setDescription(updateItemRequest.getDescription());
         }
-        if (itemDto.getAvailable() != null) {
-            updatedItem.setAvailable(itemDto.getAvailable());
+        if (updateItemRequest.getAvailable() != null) {
+            updatedItem.setAvailable(updateItemRequest.getAvailable());
         }
     }
 }

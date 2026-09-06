@@ -50,8 +50,8 @@ public class InMemoryItemStorage implements ItemStorage {
         return items.values().stream()
                 .filter(Item::getAvailable)
                 .filter(item ->
-                        (item.getName() != null && item.getName().toLowerCase().contains(lowerText)) ||
-                                (item.getDescription() != null && item.getDescription().toLowerCase().contains(lowerText))
+                        item.getName().toLowerCase().contains(lowerText) ||
+                                item.getDescription().toLowerCase().contains(lowerText)
                 )
                 .collect(Collectors.toList());
     }

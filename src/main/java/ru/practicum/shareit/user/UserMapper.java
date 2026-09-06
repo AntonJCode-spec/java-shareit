@@ -1,8 +1,12 @@
 package ru.practicum.shareit.user;
 
+import lombok.experimental.UtilityClass;
+import ru.practicum.shareit.user.dto.NewUserRequest;
+import ru.practicum.shareit.user.dto.UpdateUserRequest;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
+@UtilityClass
 public class UserMapper {
 
     public static UserDto mapToUserDto(User user) {
@@ -14,20 +18,20 @@ public class UserMapper {
         return userDto;
     }
 
-    public static User mapToUser(UserDto userDto) {
+    public static User mapToUser(NewUserRequest newUserRequest) {
         User user = new User();
-        user.setName(userDto.getName());
-        user.setEmail(userDto.getEmail());
+        user.setName(newUserRequest.getName());
+        user.setEmail(newUserRequest.getEmail());
         return user;
     }
 
-    public static void updateFields(User updatedUser, UserDto userDto) {
-        if (userDto.getName() != null && !userDto.getName().isBlank()) {
-            updatedUser.setName(userDto.getName());
+    public static void updateFields(User updatedUser, UpdateUserRequest updateUserRequest) {
+        if (updateUserRequest.getName() != null && !updateUserRequest.getName().isBlank()) {
+            updatedUser.setName(updateUserRequest.getName());
         }
 
-        if (userDto.getEmail() != null && !userDto.getEmail().isBlank()) {
-            updatedUser.setEmail(userDto.getEmail());
+        if (updateUserRequest.getEmail() != null && !updateUserRequest.getEmail().isBlank()) {
+            updatedUser.setEmail(updateUserRequest.getEmail());
         }
 
     }

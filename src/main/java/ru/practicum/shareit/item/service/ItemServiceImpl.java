@@ -2,12 +2,13 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.DataValidationException;
 import ru.practicum.shareit.exception.ItemNotFoundException;
 import ru.practicum.shareit.exception.NonAuthorizedUserException;
 import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.NewItemRequest;
+import ru.practicum.shareit.item.dto.UpdateItemRequest;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.user.model.User;
@@ -45,28 +46,18 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto createItem(Long userId, ItemDto itemDto) {
+    public ItemDto createItem(Long userId, NewItemRequest newItemRequest) {
         User owner = userStorage.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователя с переданным id не существует"));
 
-        if (itemDto.getName() == null || itemDto.getName().isBlank()) {
-            throw new DataValidationException("Название вещи не может быть пустым");
-        }
-        if (itemDto.getDescription() == null || itemDto.getDescription().isBlank()) {
-            throw new DataValidationException("Описание вещи не может быть пустым");
-        }
-        if (itemDto.getAvailable() == null) {
-            throw new DataValidationException("Необходимо указать доступность вещи к бронированию");
-        }
-
-        Item itemToAdd = ItemMapper.mapToItem(itemDto);
+        Item itemToAdd = ItemMapper.mapToItem(newItemRequest);
         itemToAdd.setOwner(owner);
 
         return ItemMapper.mapToItemDto(itemStorage.createItem(itemToAdd));
     }
 
     @Override
-    public ItemDto updateItem(Long userId, Long itemId, ItemDto itemDto) {
+    public ItemDto updateItem(Long userId, Long itemId, UpdateItemRequest updateItemRequest) {
         Item itemToUpdate = itemStorage.findItemById(itemId)
                 .orElseThrow(() -> new ItemNotFoundException("Вещи с переданным id не существует"));
 
@@ -74,7 +65,7 @@ public class ItemServiceImpl implements ItemService {
             throw new NonAuthorizedUserException("Обновлять данные о вещи может только её владелец");
         }
 
-        ItemMapper.updateField(itemToUpdate, itemDto);
+        ItemMapper.updateField(itemToUpdate, updateItemRequest);
 
         itemStorage.updateItem(itemToUpdate);
 
