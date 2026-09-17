@@ -11,7 +11,11 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoForOwner;
+import ru.practicum.shareit.item.dto.ItemWithComments;
+import ru.practicum.shareit.item.dto.NewCommentRequest;
 import ru.practicum.shareit.item.dto.NewItemRequest;
 import ru.practicum.shareit.item.dto.UpdateItemRequest;
 import ru.practicum.shareit.item.service.ItemService;
@@ -25,13 +29,14 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-    public Collection<ItemDto> getItemsByOwnerId(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public Collection<ItemDtoForOwner> getItemsByOwnerId(@RequestHeader("X-Sharer-User-Id") Long userId) {
         return itemService.getItemsByOwnerId(userId);
     }
 
     @GetMapping("/{id}")
-    public ItemDto getItemById(@PathVariable Long id) {
-        return itemService.getItemById(id);
+    public ItemWithComments getItemById(@PathVariable Long id,
+                                        @RequestHeader("X-Sharer-User-Id") Long userId) {
+        return itemService.getItemById(id, userId);
     }
 
     @GetMapping("/search")
@@ -43,6 +48,13 @@ public class ItemController {
     public ItemDto createItem(@RequestHeader("X-Sharer-User-Id") Long userId,
                               @Valid @RequestBody NewItemRequest newItemRequest) {
         return itemService.createItem(userId, newItemRequest);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addNewComment(@RequestHeader("X-Sharer-User-Id") Long authorId,
+                                    @PathVariable Long itemId,
+                                    @RequestBody NewCommentRequest newCommentRequest) {
+        return itemService.addNewComment(authorId, itemId, newCommentRequest);
     }
 
     @PatchMapping("/{itemId}")

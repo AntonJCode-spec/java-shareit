@@ -8,7 +8,7 @@ import ru.practicum.shareit.user.dto.NewUserRequest;
 import ru.practicum.shareit.user.dto.UpdateUserRequest;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -17,16 +17,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserStorage userStorage;
+    private final UserRepository userRepository;
 
     public Collection<UserDto> findAllUsers() {
-        return userStorage.findAll().stream()
+        return userRepository.findAll().stream()
                 .map(UserMapper::mapToUserDto)
                 .collect(Collectors.toList());
     }
 
     public UserDto findUserById(Long id) {
-        return userStorage.findById(id)
+        return userRepository.findById(id)
                 .map(UserMapper::mapToUserDto)
                 .orElseThrow(() -> new UserNotFoundException("Пользователя не существует"));
     }
@@ -34,30 +34,28 @@ public class UserService {
     public UserDto createUser(NewUserRequest newUserRequest) {
         User userToAdd = UserMapper.mapToUser(newUserRequest);
 
-        if (userStorage.isEmailExist(userToAdd.getEmail())) {
+        if (userRepository.existsByEmail(userToAdd.getEmail())) {
             throw new DuplicateDataException("Пользователь с указанным email уже существует");
         }
-        return UserMapper.mapToUserDto(userStorage.create(userToAdd));
+        return UserMapper.mapToUserDto(userRepository.save(userToAdd));
     }
 
     public UserDto updateUserField(Long id, UpdateUserRequest updateUserRequest) {
-        User updatedUser = userStorage.findById(id)
+        User updatedUser = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("Пользователя с указанным id не существует"));
 
         if (!updatedUser.getEmail().equals(updateUserRequest.getEmail())) {
-            if (userStorage.isEmailExist(updateUserRequest.getEmail())) {
+            if (userRepository.existsByEmail(updateUserRequest.getEmail())) {
                 throw new DuplicateDataException("Пользователь с полученным email уже существует");
             }
         }
         UserMapper.updateFields(updatedUser, updateUserRequest);
 
-        userStorage.update(updatedUser);
+        userRepository.save(updatedUser);
         return UserMapper.mapToUserDto(updatedUser);
     }
 
     public void deleteUser(Long id) {
-        if (!userStorage.delete(id)) {
-            throw new UserNotFoundException("Пользователя не существует");
-        }
+        userRepository.deleteById(id);
     }
 }
