@@ -22,6 +22,8 @@ import ru.practicum.shareit.item.service.ItemService;
 
 import java.util.Collection;
 
+import static ru.practicum.shareit.util.Constants.USER_ID_HEADER;
+
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
@@ -29,13 +31,13 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-    public Collection<ItemDtoForOwner> getItemsByOwnerId(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public Collection<ItemDtoForOwner> getItemsByOwnerId(@RequestHeader(USER_ID_HEADER) Long userId) {
         return itemService.getItemsByOwnerId(userId);
     }
 
     @GetMapping("/{id}")
     public ItemWithComments getItemById(@PathVariable Long id,
-                                        @RequestHeader("X-Sharer-User-Id") Long userId) {
+                                        @RequestHeader(USER_ID_HEADER) Long userId) {
         return itemService.getItemById(id, userId);
     }
 
@@ -45,20 +47,20 @@ public class ItemController {
     }
 
     @PostMapping
-    public ItemDto createItem(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ItemDto createItem(@RequestHeader(USER_ID_HEADER) Long userId,
                               @Valid @RequestBody NewItemRequest newItemRequest) {
         return itemService.createItem(userId, newItemRequest);
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentDto addNewComment(@RequestHeader("X-Sharer-User-Id") Long authorId,
+    public CommentDto addNewComment(@RequestHeader(USER_ID_HEADER) Long authorId,
                                     @PathVariable Long itemId,
                                     @RequestBody NewCommentRequest newCommentRequest) {
         return itemService.addNewComment(authorId, itemId, newCommentRequest);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ItemDto updateItem(@RequestHeader(USER_ID_HEADER) Long userId,
                               @PathVariable Long itemId,
                               @RequestBody UpdateItemRequest updateItemRequest) {
         return itemService.updateItem(userId, itemId, updateItemRequest);

@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.util;
 
 import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.item.dto.CommentDto;

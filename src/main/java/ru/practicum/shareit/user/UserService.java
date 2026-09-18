@@ -9,6 +9,7 @@ import ru.practicum.shareit.user.dto.UpdateUserRequest;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
+import ru.practicum.shareit.util.UserMapper;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
