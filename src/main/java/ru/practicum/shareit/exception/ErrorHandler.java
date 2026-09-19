@@ -23,6 +23,12 @@ public class ErrorHandler {
                 HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> notAvailableExceptionHandler(NotAvailableException e) {
+        return new ResponseEntity<>(new ErrorResponse("AVAILABLE ERROR", e.getMessage()),
+                HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
         String errors = ex.getBindingResult().getFieldErrors().stream()
