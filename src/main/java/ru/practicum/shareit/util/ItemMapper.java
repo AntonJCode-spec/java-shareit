@@ -4,6 +4,7 @@ import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.booking.dto.BookingDateDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemToRequest;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoForOwner;
 import ru.practicum.shareit.item.dto.ItemWithComments;
@@ -96,5 +97,15 @@ public class ItemMapper {
         }
 
         return itemDtoForOwner;
+    }
+
+    public static ItemToRequest mapToAnswerRequest(Item item) {
+        ItemToRequest itemToRequest = new ItemToRequest();
+
+        itemToRequest.setId(item.getId());
+        itemToRequest.setName(item.getName());
+        itemToRequest.setOwner(item.getOwner().getId());
+
+        return itemToRequest;
     }
 }

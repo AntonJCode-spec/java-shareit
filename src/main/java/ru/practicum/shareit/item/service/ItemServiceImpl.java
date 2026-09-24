@@ -2,6 +2,9 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.util.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingDateDto;
 import ru.practicum.shareit.booking.model.Booking;
@@ -40,6 +43,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
 
     public Collection<ItemDtoForOwner> getItemsByOwnerId(Long ownerId) {
@@ -117,6 +121,12 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new UserNotFoundException("Пользователя с переданным id не существует"));
         Item itemToAdd = ItemMapper.mapToItem(newItemRequest);
         itemToAdd.setOwner(owner);
+
+        if (newItemRequest.getRequestId() != null) {
+            ItemRequest itemRequest = itemRequestRepository.findById(newItemRequest.getRequestId())
+                    .orElseThrow(() -> new NotFoundException("Запрос на вещь с таким id не найден"));
+            itemToAdd.setRequest(itemRequest);
+        }
 
         return ItemMapper.mapToItemDto(itemRepository.save(itemToAdd));
     }
