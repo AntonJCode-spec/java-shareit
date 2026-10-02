@@ -13,7 +13,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> notFoundHandler(NotFoundException e) {
-        return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), e.getMessage()),
+        return new ResponseEntity<>(new ErrorResponse("NOT_FOUND", e.getMessage()),
                 HttpStatus.NOT_FOUND);
     }
 
