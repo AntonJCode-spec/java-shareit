@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemToRequest;
 import ru.practicum.shareit.item.dto.NewItemRequest;
@@ -18,7 +20,10 @@ import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.NewUserRequest;
 import ru.practicum.shareit.user.dto.UserDto;
 
+import java.util.Collection;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -79,6 +84,64 @@ public class RequestServiceTest {
         assertThat(item.getId()).isEqualTo(itemForRequest.getId());
         assertThat(item.getName()).isEqualTo(itemForRequest.getName());
         assertThat(item.getOwner()).isEqualTo(itemForRequest.getOwner());
+    }
+
+    @Test
+    void shouldGetUserRequests() {
+        UserDto requestor = userService.createUser(createNewUserRequest("user", "user@mail.ru"));
+        requestService.createRequest(requestor.getId(), createNewRequest());
+
+        Collection<ItemRequestDto> requests = requestService.getUserRequests(requestor.getId());
+
+        assertThat(requests).hasSize(1);
+        ItemRequestDto request = requests.iterator().next();
+        assertThat(request.getDescription()).isEqualTo("need item");
+        assertThat(request.getRequestor()).isEqualTo(requestor.getId());
+    }
+
+    @Test
+    void shouldReturnEmptyWhenUserHasNoRequests() {
+        UserDto requestor = userService.createUser(createNewUserRequest("user", "user@mail.ru"));
+
+        Collection<ItemRequestDto> requests = requestService.getUserRequests(requestor.getId());
+
+        assertThat(requests).isEmpty();
+    }
+
+    @Test
+    void shouldThrowWhenGetUserRequestsForNotExistsUser() {
+        assertThatThrownBy(() -> requestService.getUserRequests(999L))
+                .isInstanceOf(UserNotFoundException.class);
+    }
+
+    @Test
+    void shouldGetAllOtherUsersRequests() {
+        UserDto user1 = userService.createUser(createNewUserRequest("user1", "user1@mail.ru"));
+        UserDto user2 = userService.createUser(createNewUserRequest("user2", "user2@mail.ru"));
+
+        requestService.createRequest(user1.getId(), createNewRequest());
+        requestService.createRequest(user2.getId(), createNewRequest());
+
+        Collection<ItemRequestDto> requests = requestService.getAllOtherUsersRequests(user1.getId());
+
+        assertThat(requests).hasSize(1);
+        assertThat(requests.iterator().next().getRequestor()).isEqualTo(user2.getId());
+    }
+
+    @Test
+    void shouldReturnEmptyWhenNoOtherUsersRequests() {
+        UserDto user = userService.createUser(createNewUserRequest("user", "user@mail.ru"));
+        requestService.createRequest(user.getId(), createNewRequest());
+
+        Collection<ItemRequestDto> requests = requestService.getAllOtherUsersRequests(user.getId());
+
+        assertThat(requests).isEmpty();
+    }
+
+    @Test
+    void shouldThrowWhenGetRequestByIdNotFound() {
+        assertThatThrownBy(() -> requestService.getRequestById(999L))
+                .isInstanceOf(NotFoundException.class);
     }
 
     private NewUserRequest createNewUserRequest(String name, String email) {
