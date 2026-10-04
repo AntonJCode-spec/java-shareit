@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.practicum.shareit.request.dto.NewItemRequestDto;
 
+import static ru.practicum.shareit.util.Constants.USER_ID_HEADER;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/requests")
@@ -22,7 +24,7 @@ public class RequestController {
     public final RequestClient requestClient;
 
     @GetMapping
-    public ResponseEntity<Object> getRequestByRequestorId(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public ResponseEntity<Object> getRequestByRequestorId(@RequestHeader(USER_ID_HEADER) Long userId) {
         return requestClient.getRequestsByUserId(userId);
     }
 
@@ -32,12 +34,12 @@ public class RequestController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Object> getAllRequest(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public ResponseEntity<Object> getAllRequest(@RequestHeader(USER_ID_HEADER) Long userId) {
         return requestClient.getAllRequests(userId);
     }
 
     @PostMapping
-    public ResponseEntity<Object> createRequest(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ResponseEntity<Object> createRequest(@RequestHeader(USER_ID_HEADER) Long userId,
                                                 @Valid @RequestBody NewItemRequestDto newItemRequestDto) {
         return requestClient.postRequest(userId, newItemRequestDto);
     }

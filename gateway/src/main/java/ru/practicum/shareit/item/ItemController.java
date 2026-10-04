@@ -17,6 +17,8 @@ import ru.practicum.shareit.item.dto.NewCommentRequest;
 import ru.practicum.shareit.item.dto.NewItemRequest;
 import ru.practicum.shareit.item.dto.UpdateItemRequest;
 
+import static ru.practicum.shareit.util.Constants.USER_ID_HEADER;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/items")
@@ -25,13 +27,13 @@ public class ItemController {
     private final ItemClient itemClient;
 
     @GetMapping
-    public ResponseEntity<Object> getItems(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public ResponseEntity<Object> getItems(@RequestHeader(USER_ID_HEADER) Long userId) {
         return itemClient.getItems(userId);
     }
 
     @GetMapping("/{itemId}")
     public ResponseEntity<Object> getItem(@PathVariable Long itemId,
-                                          @RequestHeader("X-Sharer-User-Id") Long userId) {
+                                          @RequestHeader(USER_ID_HEADER) Long userId) {
 
         return itemClient.getItem(itemId, userId);
     }
@@ -42,20 +44,20 @@ public class ItemController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createItem(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ResponseEntity<Object> createItem(@RequestHeader(USER_ID_HEADER) Long userId,
                                              @Valid @RequestBody NewItemRequest newItemRequest) {
         return itemClient.postItem(userId, newItemRequest);
     }
 
     @PostMapping("/{itemId}/comment")
-    public ResponseEntity<Object> createComment(@RequestHeader("X-Sharer-User-Id") Long authorId,
+    public ResponseEntity<Object> createComment(@RequestHeader(USER_ID_HEADER) Long authorId,
                                                 @PathVariable Long itemId,
                                                 @Valid @RequestBody NewCommentRequest newCommentRequest) {
         return itemClient.postComment(authorId, itemId, newCommentRequest);
     }
 
     @PatchMapping("/{itemId}")
-    public ResponseEntity<Object> patchItem(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ResponseEntity<Object> patchItem(@RequestHeader(USER_ID_HEADER) Long userId,
                                             @PathVariable Long itemId,
                                             @Valid @RequestBody UpdateItemRequest updateItemRequest) {
         return itemClient.patchItem(userId, itemId, updateItemRequest);
